@@ -1,6 +1,7 @@
 import unittest
 from api.app import app
 import json
+from api.models import RideMyWay
 
 
 class TestAuth(unittest.TestCase):
@@ -9,7 +10,6 @@ class TestAuth(unittest.TestCase):
         app.testing = True
         self.app = app.test_client()
         self.ride = {
-            "ride_id": "ride1",
             "starting_point": "nairobi",
             "destination": "kiambu",
             "date": "12/02/2018",
@@ -23,24 +23,23 @@ class TestAuth(unittest.TestCase):
             "time": "10:00"
         }
 
-
     def test_rides_can_register(self):
-        response=self.app.post('/api/v1/rides',data = json.dumps(self.ride),
-            content_type = "application/json")
-        self.assertIn("ride1", str(response.data))
+        response = self.app.post('/api/v1/rides', data=json.dumps(self.ride),
+                                 content_type="application/json")
+        self.assertIn("1", str(response.data))
         self.assertIn("kiambu", str(response.data))
         self.assertIn("nairobi", str(response.data))
         self.assertEqual(response.status_code, 201)
 
     def test_rides_cannot_be_blank(self):
         """test api cannot register rides with blank fields"""
-        response = self.app.post('/api/v1/auth/rides',
-                                 data=json.dumps(self.ride),
+        response = self.app.post('/api/v1/rides',
+                                 data=json.dumps(self.empty_ride),
                                  content_type="application/json")
 
-        self.assertEqual(response, {'message': 'fields(s) cannot be empty'})
+        self.assertEqual(response, {'message': 'Please enter correct ride details'})
         self.assertEqual(response.status_code, 400)
-        # self.assertNotIn("kiambu", str(response.data))
+
     def test_get_all_rides(self):
         '''test api can get all available rides (GET request)'''
         post_result = self.app.post(
@@ -60,7 +59,7 @@ class TestAuth(unittest.TestCase):
         self.assertEqual(post_result.status_code, 201)
         json_result = json.loads(post_result.data.decode())
         result = self.app.get(
-            '/api/v1/rides/'.format(json_result['ride_id']),
+            '/api/v1/rides/{}'.format(json_result['ride_id']),
             content_type='application/json')
         self.assertEqual(result.status_code, 200)
 
@@ -81,10 +80,15 @@ class TestAuth(unittest.TestCase):
         post_result = self.app.post(
             '/api/v1/rides', data=json.dumps(self.ride))
         self.assertEqual(post_result.status_code, 201)
-        delete_result = self.app.delete('/api/v1/rides/ride1')
+        delete_result = self.app.delete('/api/v1/rides/1')
         self.assertEqual(delete_result.status_code, 200)
+        response = self.app.get('/api/v1/rides/1')
+        self.assertIn('Ride Doesnt Exist', str(response.data))
 
-
+    def test_delete_non_existing_ride(self):
+        """test api can delete a single ride by id"""
+        delete_result = self.app.delete('/api/v1/rides/1')
+        self.assertEqual(delete_result.status_code, 200)
 
 
 if __name__ == "__main__":
