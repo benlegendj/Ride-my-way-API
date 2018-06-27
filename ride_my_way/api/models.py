@@ -3,10 +3,8 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from flask_jwt_extended import (
     create_access_token
 )
-
 from cerberus import Validator
 import datetime
-from flask import jsonify
 
 
 class RideMyWay(object):
@@ -14,54 +12,27 @@ class RideMyWay(object):
     def __init__(self):
         '''creating a list containing dictionaries to act as a database'''
         self.users_counter = 0
+        self.users_list = []
         self.rides_list = []
-        self.requests_list = []
+        self.request_details = []
 
-    def add_rides(self, data):
-        self.rides_list.append(data)
-        return jsonify({'message': 'Ride Added'})
+    """
+    HELPER METHODS FOR USER VIEWS
+    """
 
-    def view_rides(self):
-        return jsonify(self.rides_list)
+    def check_email_exists(self, search_email):
+        '''check for email existence'''
+        for find_email in self.users_list:
+            if find_email['email'] == search_email:
+                return True
+        return False
 
-    def request_rides(self, data):
-        self.requests_list.append(data)
-        response = jsonify({'message': "You have requested this ride"})
-        return response
-
-    def create_ride_validation(self, dict_data):
-        '''ride details validation function'''
-        schema = {
-            'starting_point': {
-                'type': 'string',
-                'required': True,
-                'empty': False,
-                'maxlength': 25,
-                'minlength': 4},
-            'destination': {
-                'type': 'string',
-                'required': True,
-                'empty': False,
-                'maxlength': 25,
-                'minlength': 4}}
-        v = Validator(schema)
-        v.allow_unknown = True
-        return v.validate(dict_data)
-
-    def date_validate(self, date_text):
-        try:
-            datetime.datetime.strptime(date_text, '%d-%m-%Y')
-            return True
-        except BaseException:
-            return False
-
-    def time_validate(self, time_text):
-        timeformat = "%H:%M:%S"
-        try:
-            datetime.datetime.strptime(time_text, timeformat)
-            return True
-        except BaseException:
-            return False
+    def check_email_for_login(self, search_email):
+        '''this checks the list and returns the email or false'''
+        for find_email in self.users_list:
+            if find_email['email'] == search_email:
+                return find_email
+        return False
 
     def user_data_validation(self, dict_data):
         '''user data validation method'''
@@ -84,19 +55,24 @@ class RideMyWay(object):
         v.allow_unknown = True
         return v.validate(dict_data)
 
-    def check_email_exists(self, search_email):
-        '''check for email existence'''
-        for find_email in self.users_list:
-            if find_email['email'] == search_email:
-                return True
-        return False
+    def password_validation(self, dict_data):
+        '''Password validation method'''
+        schema = {
+            'password': {
+                'type': 'string',
+                'required': True,
+                'maxlength': 16,
+                'minlength': 6}}
+        v = Validator(schema)
+        v.allow_unknown = True
+        return v.validate(dict_data)
 
-    def check_email_for_login(self, search_email):
-        '''this checks the list and returns the email or false'''
-        for find_email in self.users_list:
-            if find_email['email'] == search_email:
-                return find_email
-        return False
+    """
+    END OF USER HELPER METHODS
+    """
+    """
+    Code for user methods that are imported into auth_views.py
+    """
 
     def user_registration(self, data):
         data['password'] = generate_password_hash(data['password'])
@@ -117,4 +93,68 @@ class RideMyWay(object):
 
     def view_users(self):
         return jsonify(self.users_list)
+    """
+    END OF AUTH CODE
+    """
 
+    """
+    CODE FOR RIDES
+    """
+
+    def create_rides(self, data):
+        self.rides_list.append(data)
+        return jsonify({'message': 'Ride created successfully'})
+
+    def view_rides(self):
+        return jsonify(self.rides_list)
+
+    def request_ride(self, data):
+        self.request_details.append(data)
+        response = jsonify({'message': "You have requestes to join this ride this"})
+        return response
+
+    """
+    VALIDATION FOR RIDE DATA
+    """
+
+    def add_ride_validation(self, dict_data):
+        '''ride data validation function'''
+        schema = {
+            'starting_point': {
+                'type': 'string',
+                'required': False,
+                'empty': False,
+                'maxlength': 25,
+                'minlength': 4},
+            'destination': {
+                'type': 'string',
+                'required': False,
+                'empty': False,
+                'maxlength': 25,
+                'minlength': 4}}
+        v = Validator(schema)
+        v.allow_unknown = True
+        return v.validate(dict_data)
+
+    def date_validate(self, date_text):
+        try:
+            datetime.datetime.strptime(date_text, '%d-%m-%Y')
+            return True
+        except BaseException:
+            return False
+    
+    def time_validate(self, time_text):
+        timeformat = "%H:%M"
+        try:
+            datetime.datetime.strptime(time_text, timeformat)
+            return True
+        except BaseException:
+            return False
+    
+
+
+
+
+    """
+    END OF RIDE CODE
+    """
