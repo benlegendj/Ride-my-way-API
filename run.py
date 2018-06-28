@@ -1,2 +1,3 @@
-# from api import app
-# app.run(debug=True)
+from ride_my_way import app
+
+app.run(debug=True)

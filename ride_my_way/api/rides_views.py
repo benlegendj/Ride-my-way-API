@@ -10,7 +10,6 @@ from flask_jwt_extended import (
 
 blacklist = set()
 
-
 jwt = JWTManager(app)
 
 
@@ -30,9 +29,9 @@ def edit_rides(id):
     '''Function for editing ride info'''
     ride = [ride for ride in ride_my_way.rides_list if ride['ride_id'] == id]
     if len(ride) == 0:
-        return jsonify({'message': "Ride Doesn't Exist"}),404
+        return jsonify({'message': "Ride Doesn't Exist"}), 404
     if not request.json:
-        return jsonify({'message': "No data entered"}),204
+        return jsonify({'message': "No data entered"}), 204
     '''Check if starting point is valid'''
     if 'starting_point' in request.json:
         if ride_my_way.add_ride_validation({'starting_point': request.json['starting_point']}):
@@ -43,7 +42,7 @@ def edit_rides(id):
     '''check if destination is entered and if it is correct'''
     if 'destination' in request.json:
         if ride_my_way.add_ride_validation({'destination': request.json['destination']}):
-            ride[0]['a'] = request.json['destination']
+            ride[0]['destination'] = request.json['destination']
         else:
             return jsonify(
                 {'message': 'Please enter a correct destination above 4 characters'})
@@ -54,16 +53,10 @@ def edit_rides(id):
         else:
             return jsonify(
                 {'message': 'Please enter a correct date format DD-MM-YYYY'})
-    '''check if time is entered correctly'''
-    if 'time' in request.json:
-        if ride_my_way.time_validate({'time': request.json['time']}):
-            ride[0]['time'] = request.json['time']
-        else:
-            return jsonify(
-                {"message": "Please enter a time between 4-10 characters"})
-    
+        if ride_my_way.add_ride_validation(ride[0]):
+            return jsonify({"ride": ride[0]})
     else:
-        return jsonify({"message": "Please enter ride data correctly"})
+        return jsonify({"message": "please enter valid ride details"})
 
 
 @app.route('/api/v1/rides', methods=['POST'])
@@ -76,7 +69,7 @@ def add_ride():
         'destination': sent_data.get('destination'),
         'date': sent_data.get('date'),
         'time': sent_data.get('time')
-        
+
     }
     if ride_my_way.add_ride_validation(data):
         ride_my_way.create_rides(data)
@@ -112,12 +105,12 @@ def request_ride(id):
     }
 
     if len(ride) == 0:
-        return jsonify({'message': "Ride Doesnt Exist"}),404
+        return jsonify({'message': "Ride Doesnt Exist"}), 404
     elif ride[0]['available'] == False:
         return jsonify({'message': "The ride has already been borrowed"})
     else:
         ride[0]['available'] = False
-        ride_my_way.request_ride(data)
+        RideMyWay().request_ride(data)
         response = jsonify({
             'ride_id': data['ride_id'],
             'user': data['user_email'],
@@ -149,5 +142,5 @@ def get_by_id(id):
     '''function to get a single ride by its id'''
     ride = [ride for ride in ride_my_way.rides_list if ride['ride_id'] == id]
     if len(ride) == 0:
-        return jsonify({'message': "ride Doesnt Exist"}),404
+        return jsonify({'message': "ride Doesnt Exist"}), 404
     return jsonify({'ride': ride[0]}), 200

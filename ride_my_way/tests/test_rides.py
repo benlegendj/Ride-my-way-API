@@ -1,8 +1,8 @@
 '''import dependancies'''
 import unittest
 from flask import json
-from ride_my_way import app
-
+from ride_my_way.api import app
+import datetime
 
 class TestRides(unittest.TestCase):
     '''Set up methods for test cases'''
@@ -28,7 +28,7 @@ class TestRides(unittest.TestCase):
             'time': '10:00:00'
 
         }
-        
+
 
     def test_can_create_a_ride(self):
         '''test api can create a ride (POST request)'''
@@ -65,7 +65,7 @@ class TestRides(unittest.TestCase):
 
     def test_edit_a_ride(self):
         '''test api can edit a ride (PUT request)'''
-        self.app.post('/api/v1/rides/', data=json.dumps(self.ride_data),
+        self.app.post('/api/v1/rides', data=json.dumps(self.ride_data),
                       content_type='application/json')
         self.ride_data['starting_point'] = 'Newest starting_point'
         response = self.app.put(
@@ -73,20 +73,19 @@ class TestRides(unittest.TestCase):
             data=json.dumps(
                 self.ride_data),
             content_type='application/json')
+        self.assertIn('Newest starting_point', str(response.data))
         self.assertEqual(response.status_code, 200)
 
 
     def test_edit_a_ride_blank_ride(self):
         '''test api can edit a ride (PUT request)'''
-
-        self.ride_data['starting_point'] = 'Newest starting_point'
         response = self.app.put(
             '/api/v1/rides/1',
             data=json.dumps(
                 self.ride_data),
             content_type='application/json')
-        self.assertEqual(response.status_code, 200)
-        
+        self.assertEqual(response.status_code, 404)
+
 
     def test_delete_a_ride(self):
         '''test api can delete a single ride by id'''
@@ -120,7 +119,8 @@ class TestRides(unittest.TestCase):
 
 
     def tearDown(self):
-        pass
+        del self.ride_data
+        del self.empty_ride
 
 
 if __name__ == '__main__':

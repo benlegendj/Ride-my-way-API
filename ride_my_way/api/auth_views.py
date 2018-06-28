@@ -45,7 +45,7 @@ def register():
             'password': sent_data['password'],
             'is_admin': False
         }
-        if ride_my_way.check_email_exists(data['email']):
+        if ride_my_way.check_email_for_login(data['email']):
             return jsonify({'message': 'Email Exists'})
         else:
             if ride_my_way.user_data_validation(data):

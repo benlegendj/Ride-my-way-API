@@ -9,10 +9,8 @@ from flask_jwt_extended import (
 from cerberus import Validator
 
 
-
 class TestAuth(unittest.TestCase):
     '''Class for testing user authentication'''
-
 
     def setUp(self):
         # creates a test client
@@ -30,7 +28,7 @@ class TestAuth(unittest.TestCase):
             'email': 'test@testmail.com',
             'password': 'testpass2'
         })
-        self.test_ride= {
+        self.test_ride = {
             'ride_id': '1',
             'starting_point': 'kiambu',
             'destination': 'nairobi',
@@ -108,13 +106,13 @@ class TestAuth(unittest.TestCase):
 
     def test_request_a_ride(self):
         '''test user can request a ride'''
-        result = self.app.post('/api/v1/auth/register', data=self.user_data2)
+        result = self.app.post('/api/v1/auth/register', data=self.user_data)
         self.assertEqual(result.status_code, 201)
         login = self.app.post('/api/v1/auth/login', data=json.dumps({
             'email': 'test@testmail.com',
             'password': 'testpass2'
         }))
-        self.assertEqual(login.status_code, 201)
+        self.assertEqual(login.status_code, 200)
         login_msg = json.loads(login.data)
         access_token = login_msg['access_token']
         result = self.app.post(

@@ -1,7 +1,5 @@
 [![Coverage Status](https://coveralls.io/repos/github/benlegendj/Ride-my-way-API/badge.svg?branch=master)](https://coveralls.io/github/benlegendj/Ride-my-way-API?branch=master)
-
-https://travis-ci.org/benlegendj/Ride-my-way-API.svg?branch=ft-tests-158577672
-
+<a href="https://codeclimate.com/github/benlegendj/Ride-my-way-API/test_coverage"><img src="https://api.codeclimate.com/v1/badges/46d4b9de22aa646c675f/test_coverage" /></a>
 Project Overview
 Ride-my App is a carpooling application that provides drivers with the ability to create ride offers
 and passengers to join available ride offers.
