@@ -3,3 +3,4 @@ venv/
 __init__.pyc
 *.pyc
 *.pytest_cache/
+.vscode/
