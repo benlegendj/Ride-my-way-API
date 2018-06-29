@@ -1,21 +1,14 @@
-https://travis-ci.org/benlegendj/Ride-my-way-API.svg?branch=ft-tests-158577672
-
 language: python
 python:
-  - "3.6"
+  - "3.6.4"
+
 # command to install dependencies
 install:
   - pip install -r requirements.txt
-  - pip install Flask-API
-  - pip install flask-jwt-extended
-  - pip install cerberus
-  - pip install coveralls
-  - pip install codeclimate-test-reporter
-  - pip install pytest pytest-cov
-# command to run tests
-script: 
-  - pytest --cov=./ 
-after_success:
- - coveralls
- - codeclimate-test-reporter
+  - pip install nose
 
+# command to run tests
+script: nosetests --with-coverage
+
+after_success:
+  - coveralls

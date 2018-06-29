@@ -1,4 +1,3 @@
-[![Coverage Status](https://coveralls.io/repos/github/benlegendj/Ride-my-way-API/badge.svg?branch=master)](https://coveralls.io/github/benlegendj/Ride-my-way-API?branch=master)
 
 Project Overview
 Ride-my App is a carpooling application that provides drivers with the ability to create ride offers
@@ -26,5 +25,5 @@ the ride leaves, where it is headed e.t.c
     ```
 * Git clone this repo to your PC
     ```
-        $ git clone https://github.com/benlegendj/Ride-my-way-API.git
+        $ git clone https://github.com/benlegendj/Ride-my-way-API-s.git
     ```
